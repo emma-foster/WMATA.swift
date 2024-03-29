@@ -8,6 +8,17 @@
 import Foundation
 import SQLite
 
+/// Information about the GTFS dataset. Includes details about who publishes the dataset and over what time period it's valid.
+///
+/// More info available at [feed_info.txt docs](https://gtfs.org/schedule/reference/#feed_infotxt)
+///
+/// ## Example
+///
+/// ```
+/// let feedInfo = try GTFSFeedInfo("WMATA")
+///
+/// feedInfo.endDate // the last date this dataset is valid for
+/// ```
 public struct GTFSFeedInfo: Equatable, Hashable, Codable {
     /// The human readable name of the organization that publishes this GTFS dataset
     public var publisherName: String
@@ -35,7 +46,7 @@ public struct GTFSFeedInfo: Equatable, Hashable, Codable {
 }
 
 extension GTFSFeedInfo: GTFSStructure {
-    public var id: GTFSIdentifier<GTFSFeedInfo> { GTFSIdentifier(.init(publisherName)) }
+    public var id: GTFSIdentifier<GTFSFeedInfo> { .init(publisherName) }
     
     enum TableColumn {
         static let publisherName = Expression<String>("feed_publisher_name")

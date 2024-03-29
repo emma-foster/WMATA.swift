@@ -34,7 +34,7 @@ The following GTFS data types are supported
 | stops.txt | ✅ | 
 | stop_times.txt | ❌ |
 | stop_areas.txt | ❌ |
-| timeframes.txt | ❌ |
+| timeframes.txt | ✅ |
 | timepoints.txt | ❌ |
 | timepoints_times.txt | ❌ |
 | trips.txt | ❌ | 

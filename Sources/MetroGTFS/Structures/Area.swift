@@ -8,6 +8,12 @@
 import Foundation
 import SQLite
 
+/// A [GTFS Area](https://gtfs.org/schedule/reference/#areastxt). Defines IDs for areas within the transit system. For WMATA, these represent physical stations or `everywhere`.
+///
+/// ## Example
+/// ```
+/// let area = try GTFSArea("STN_A01_C01") // Metro Center
+/// ```
 public struct GTFSArea: Equatable, Hashable, Codable {
     
     /// A unique ID for the area. For WMATA, this is a Station Code (or multiple for transfer stations) prefixed by `STN_`.

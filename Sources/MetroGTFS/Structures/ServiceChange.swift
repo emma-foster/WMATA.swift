@@ -16,7 +16,7 @@ import SQLite
 /// let service = GTFSService("weekday_service_R")
 ///
 /// service.change(on: 20240619) // .removed
-/// service.change(on: Date()) // nil (hopefully)
+/// service.change(on: Date()) // nil (a good day)
 /// ```
 public struct GTFSServiceChange: Equatable, Hashable, Codable {
     /// The ID of the ``GTFSService`` that is being modified

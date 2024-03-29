@@ -240,4 +240,17 @@ final class MetroGTFSTests: XCTestCase {
         
         XCTAssertEqual(area.id.rawValue, "STN_A01_C01")
     }
+    
+// TODO: Uncomment when `timeframe.txt` is pulled into database: https://github.com/BlinkTagInc/node-gtfs/pull/158
+//    func testAllTimeframes() throws {
+//        for timeframe in try GTFSTimeframe.all() {
+//            XCTAssertTrue(timeframe.id.rawValue.contains("weekday") || timeframe.id.rawValue.contains("weekend"))
+//        }
+//    }
+    
+    func testCreateTimeframe() throws {
+        let timeframe = GTFSTimeframe(id: .init("weekday_regular"), startTime: Date.now, endTime: Date.now, serviceID: .init("weekday_service_R"))
+        
+        XCTAssertEqual(timeframe.id, .init("weekday_regular"))
+    }
 }
