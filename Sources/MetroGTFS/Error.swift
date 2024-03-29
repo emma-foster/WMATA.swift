@@ -29,10 +29,13 @@ public enum GTFSDatabaseError: Error {
 public enum GTFSDatabaseQueryError<Structure>: Error {
     /// The requested row does not exist in the given SQLite database table
     case notFound(GTFSIdentifier<Structure>, Table)
+    
+    /// No rows match the given predicate in the SQLite database table
+    case notFound(predicate: Expression<Bool>, Table)
 }
 
 /// Errors associated with decoding SQLite table rows into Swift types
-public enum GTFSDatabaseDecodingError<T>: Error {
+public enum GTFSDatabaseDecodingError<Structure>: Error {
     /// Occurs when a row in the SQLite database does not have
-    case invalidEntry(structureType: T.Type, key: String)
+    case invalidEntry(structureType: Structure.Type, key: String)
 }

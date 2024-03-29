@@ -83,7 +83,14 @@ extension GTFSDatabase {
         with id: GTFSIdentifier<Structure>,
         in column: SQLite.Expression<String> = Structure.databaseTable.primaryKeyColumn
     ) throws -> Row? {
-        return try run(query: structure.databaseTable.sqlTable.where(column == id.rawValue))
+        try run(query: structure.databaseTable.sqlTable.where(column == id.rawValue))
+    }
+    
+    func one<Structure: GTFSStructure>(
+        _  structure: Structure.Type,
+        where predicate: SQLite.Expression<Bool>
+    ) throws -> Row? {
+        try run(query: structure.databaseTable.sqlTable.where(predicate))
     }
 }
 

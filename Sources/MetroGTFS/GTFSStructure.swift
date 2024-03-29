@@ -43,7 +43,20 @@ extension GTFSStructure {
         let row = try database.one(Self.self, with: id)
         
         guard let row else {
-            throw GTFSDatabaseQueryError.notFound(id, GTFSAgency.databaseTable.sqlTable)
+            throw GTFSDatabaseQueryError.notFound(id, Self.databaseTable.sqlTable)
+        }
+        
+        try self.init(row: row)
+    }
+    
+    /// Create this structure from any SQLite predicate. Useful for tables with composite primary keys.
+    init(where predicate: Expression<Bool>) throws {
+        let database = try GTFSDatabase()
+        
+        let row = try database.one(Self.self, where: predicate)
+        
+        guard let row else {
+            throw GTFSDatabaseQueryError<Self>.notFound(predicate: predicate, Self.databaseTable.sqlTable)
         }
         
         try self.init(row: row)

@@ -190,4 +190,26 @@ final class MetroGTFSTests: XCTestCase {
         XCTAssertEqual(service.on(.saturday), .hasService)
         XCTAssertEqual(service.on(.monday), .noService)
     }
+    
+    func testCreateAllServiceChanges() throws {
+        for serviceChange in try GTFSServiceChange.all() {
+            print(serviceChange)
+        }
+    }
+    
+    func testCreateServiceChange() throws {
+        let serviceChange = try GTFSServiceChange(serviceID: .init("64_R"), date: Date(from8CharacterNumber: 20240627)!)
+        
+        XCTAssertEqual(serviceChange.change, .added)
+    }
+    
+    func testCreateInvalidServiceChange() {
+        XCTAssertNil(try? GTFSServiceChange(serviceID: .init("ABCDEF"), date: 20240627))
+    }
+    
+    func testCreateServiceChangeWithShorthand() throws {
+        let serviceChange = try GTFSServiceChange("64_R", date: 20240627)
+        
+        XCTAssertEqual(serviceChange.change, .added)
+    }
 }

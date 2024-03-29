@@ -21,7 +21,7 @@ The following GTFS data types are supported
 | agency.txt | ✅ | 
 | areas.txt | ❌ |
 | calendar.txt | ✅ | 
-| calendar_dates.txt | ❌ | 
+| calendar_dates.txt | ✅ | 
 | fare_leg_rules.txt | ❌ |
 | fare_media.txt | ❌ |
 | fare_products.txt | ❌ |

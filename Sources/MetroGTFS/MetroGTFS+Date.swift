@@ -38,4 +38,34 @@ extension Date {
     init?(from8CharacterNumber dateNumber: Int) {
         self.init(from8CharacterString: String(dateNumber))
     }
+    
+    /// Convert this date into an 8 character string, like the format used in GTFS data
+    ///
+    /// ## Example
+    ///
+    /// ```
+    /// let myDate = Date(from8CharacterNumber: 20240305)
+    /// myDate.as8CharacterString() // "20240305"
+    /// ```
+    func as8CharacterString() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyymmdd"
+        
+        return dateFormatter.string(from: self)
+    }
+    
+    /// Convert this date into an 8 character number, like the format used in GTFS data
+    ///
+    /// ## Example
+    ///
+    /// ```
+    /// let myDate = Date(from8CharacterNumber: 20240305)
+    /// myDate.as8CharacterNumber() // 20240305
+    /// ```
+    func as8CharacterNumber() -> Int {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyymmdd"
+        
+        return Int(dateFormatter.string(from: self))!
+    }
 }
