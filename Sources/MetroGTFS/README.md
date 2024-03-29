@@ -19,7 +19,7 @@ The following GTFS data types are supported
 | GTFS Files | Supported? |  
 | - | - |
 | agency.txt | ✅ | 
-| areas.txt | ❌ |
+| areas.txt | ✅ |
 | calendar.txt | ✅ | 
 | calendar_dates.txt | ✅ | 
 | fare_leg_rules.txt | ❌ |

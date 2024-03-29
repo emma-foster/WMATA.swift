@@ -212,4 +212,32 @@ final class MetroGTFSTests: XCTestCase {
         
         XCTAssertEqual(serviceChange.change, .added)
     }
+    
+    func testCreateAllAreas() throws {
+        for area in try GTFSArea.all() {
+            XCTAssertTrue(area.id.rawValue == "everywhere" || area.station != nil)
+        }
+    }
+    
+    func testCreateArea() throws {
+        let area = try GTFSArea("STN_A01_C01")
+        
+        XCTAssertEqual(area.station, .transfer(.metroCenterUpper, .metroCenterLower))
+    }
+    
+    func testCreateInvalidArea() {
+        XCTAssertNil(try? GTFSArea("ABCDEFG"))
+    }
+    
+    func testAreaFromStation() throws {
+        let area = try GTFSArea(station: .addisonRoad)
+        
+        XCTAssertEqual(area.id.rawValue, "STN_G03")
+    }
+    
+    func testAreaFromTransferStation() throws {
+        let area = try GTFSArea(station: .metroCenterLower)
+        
+        XCTAssertEqual(area.id.rawValue, "STN_A01_C01")
+    }
 }
