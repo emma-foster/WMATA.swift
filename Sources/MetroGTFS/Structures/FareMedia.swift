@@ -14,6 +14,8 @@ public struct GTFSFareMedia: Equatable, Hashable, Codable {
     ///
     /// For WMATA, this represents Smartrip cards and phone apps.
     ///
+    /// [See GTFS fare_media.txt docs](https://gtfs.org/schedule/reference/#fare_mediatxt)
+    ///
     /// ## Examples
     ///
     /// ```
@@ -57,6 +59,13 @@ public struct GTFSFareMedia: Equatable, Hashable, Codable {
     
     /// What format this fare media is. Example: physical transit card, app, or paper tickets
     public var mediaType: FareMediaType
+    
+    /// Create a new fare media by providing all of it's properties
+    public init(id: GTFSIdentifier<GTFSFareMedia>, name: String, mediaType: FareMediaType) {
+        self.id = id
+        self.name = name
+        self.mediaType = mediaType
+    }
 }
 
 extension GTFSFareMedia: GTFSStructure {

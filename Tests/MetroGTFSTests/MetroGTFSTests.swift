@@ -274,4 +274,23 @@ final class MetroGTFSTests: XCTestCase {
     func testCreateInvalidFareMedia() {
         XCTAssertNil(try? GTFSFareMedia("ABCDEFFG"))
     }
+    
+    func testCreateAllFareProducts() throws {
+        for fareProduct in try GTFSFareProduct.all() {
+            XCTAssertGreaterThanOrEqual(fareProduct.amount, 2.00)
+        }
+    }
+    
+    func testCreateFareProduct() throws {
+        let fareProduct = try GTFSFareProduct("1_day_unlimited_Pass")
+        
+        XCTAssertGreaterThanOrEqual(fareProduct.amount, 13.00)
+        XCTAssertEqual(fareProduct.currency, "USD")
+        XCTAssertEqual(fareProduct.name, "1 Day Unlimited Pass")
+        XCTAssertEqual(fareProduct.fareMediaID, .init("smartrip_card"))
+    }
+    
+    func testCreateInvalidFareProduct() {
+        XCTAssertNil(try? GTFSFareProduct("ABCDEFG"))
+    }
 }

@@ -12,6 +12,8 @@ import SQLite
 ///
 /// A service may be added or removed on some dates.
 ///
+/// [See GTFS calendar_dates.txt docs](https://gtfs.org/schedule/reference/#calendar_datestxt)
+///
 /// ```swift
 /// let service = GTFSService("weekday_service_R")
 ///

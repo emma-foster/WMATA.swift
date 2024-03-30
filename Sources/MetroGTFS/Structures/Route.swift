@@ -123,7 +123,7 @@ public struct GTFSRoute: Equatable, Hashable, Codable {
     }
     
     /// Create a new route by provided all of it's fields
-    init(id: GTFSIdentifier<GTFSRoute>, agencyID: GTFSIdentifier<GTFSAgency>, shortName: String, longLame: String? = nil, routeType: RouteType, url: URL? = nil, hexColor: String, hexTextColor: String, asRoute: AsRoute, networkID: GTFSIdentifier<GTFSNetwork>) {
+    public init(id: GTFSIdentifier<GTFSRoute>, agencyID: GTFSIdentifier<GTFSAgency>, shortName: String, longLame: String? = nil, routeType: RouteType, url: URL? = nil, hexColor: String, hexTextColor: String, asRoute: AsRoute, networkID: GTFSIdentifier<GTFSNetwork>) {
         self.id = id
         self.agencyID = agencyID
         self.shortName = shortName

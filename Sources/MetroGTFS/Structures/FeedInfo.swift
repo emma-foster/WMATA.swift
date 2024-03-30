@@ -36,7 +36,7 @@ public struct GTFSFeedInfo: Equatable, Hashable, Codable {
     public var endDate: Date?
     
     /// Create a new GTFS Feed Info by providing all of it's fields
-    init(publisherName: String, publisherURL: URL, language: String, startDate: Date? = nil, endDate: Date? = nil) {
+    public init(publisherName: String, publisherURL: URL, language: String, startDate: Date? = nil, endDate: Date? = nil) {
         self.publisherName = publisherName
         self.publisherURL = publisherURL
         self.language = language

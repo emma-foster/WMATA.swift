@@ -12,6 +12,8 @@ import SQLite
 ///
 /// WMATA uses services to denote weekday, weekend, and any day services.
 ///
+/// [See GTFS calendar.txt docs](https://gtfs.org/schedule/reference/#calendartxt)
+///
 /// ```swift
 /// let service = try GTFSService("weekday_service_R")
 ///
