@@ -23,7 +23,7 @@ The following GTFS data types are supported
 | calendar.txt | ✅ | 
 | calendar_dates.txt | ✅ | 
 | fare_leg_rules.txt | ❌ |
-| fare_media.txt | ❌ |
+| fare_media.txt | ✅ |
 | fare_products.txt | ❌ |
 | feed_info.txt | ✅ | 
 | levels.txt | ✅ |

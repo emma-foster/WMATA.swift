@@ -241,16 +241,37 @@ final class MetroGTFSTests: XCTestCase {
         XCTAssertEqual(area.id.rawValue, "STN_A01_C01")
     }
     
-// TODO: Uncomment when `timeframe.txt` is pulled into database: https://github.com/BlinkTagInc/node-gtfs/pull/158
-//    func testAllTimeframes() throws {
-//        for timeframe in try GTFSTimeframe.all() {
-//            XCTAssertTrue(timeframe.id.rawValue.contains("weekday") || timeframe.id.rawValue.contains("weekend"))
-//        }
-//    }
+    func testAllTimeframes() throws {
+        for timeframe in try GTFSTimeframe.all() {
+            XCTAssertTrue(timeframe.id.rawValue.contains("weekday") || timeframe.id.rawValue.contains("weekend"))
+        }
+    }
     
     func testCreateTimeframe() throws {
-        let timeframe = GTFSTimeframe(id: .init("weekday_regular"), startTime: Date.now, endTime: Date.now, serviceID: .init("weekday_service_R"))
+        let timeframe = try GTFSTimeframe("weekday_regular")
+                
+        XCTAssertEqual(timeframe.serviceID, .init("weekday_service_R"))
+    }
+    
+    func testCreateInvalidTimeframe() {
+        XCTAssertNil(try? GTFSTimeframe("ABCDEFG"))
+    }
+
+    
+    func testCreateAllFareMedia() throws {
+        for fareMedia in try GTFSFareMedia.all() {
+            XCTAssertEqual(fareMedia.name, "Smartrip")
+            XCTAssertTrue([GTFSFareMedia.FareMediaType.physicalTransitCard, GTFSFareMedia.FareMediaType.mobileApp].contains { $0 == fareMedia.mediaType })
+        }
+    }
+    
+    func testCreateFareMedia() throws {
+        let fareMedia = try GTFSFareMedia("smartrip_app")
         
-        XCTAssertEqual(timeframe.id, .init("weekday_regular"))
+        XCTAssertEqual(fareMedia.mediaType, .mobileApp)
+    }
+    
+    func testCreateInvalidFareMedia() {
+        XCTAssertNil(try? GTFSFareMedia("ABCDEFFG"))
     }
 }

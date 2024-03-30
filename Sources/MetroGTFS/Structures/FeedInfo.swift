@@ -56,7 +56,10 @@ extension GTFSFeedInfo: GTFSStructure {
         static let endDate = Expression<Int?>("feed_end_date")
     }
     
-    static let databaseTable = GTFSDatabase.Table(sqlTable: SQLite.Table("feed_info"), primaryKeyColumn: GTFSFeedInfo.TableColumn.publisherName)
+    static let databaseTable = GTFSDatabase.Table(
+        sqlTable: SQLite.Table("feed_info"),
+        primaryKeyColumn: GTFSFeedInfo.TableColumn.publisherName
+    )
     
     init(row: Row) throws {
         do {

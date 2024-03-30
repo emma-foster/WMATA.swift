@@ -32,9 +32,15 @@ public struct GTFSTimeframe: Equatable, Hashable, Codable {
     public var id: GTFSIdentifier<GTFSTimeframe>
     
     /// The time in a day this fare timegroup starts
+    ///
+    /// - Warning
+    /// The date associated with this `Date` is not relevant. Only reference the time.
     public var startTime: Date
     
     /// The time in a day this fare timegroup ends
+    ///
+    /// - Warning
+    /// The date associated with this `Date` is not relevant. Only reference the time.
     public var endTime: Date
     
     /// The ``GTFSService`` this fare timegroup applies to.
@@ -66,7 +72,11 @@ extension GTFSTimeframe: GTFSStructure {
         self.id = .init(try row.get(TableColumn.id))
         
         let startTime = try row.get(TableColumn.startTime)
-        let endTime = try row.get(TableColumn.endTime)
+        var endTime = try row.get(TableColumn.endTime)
+        
+        if endTime == "24:00:00" {
+            endTime = "23:59:59"
+        }
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss"

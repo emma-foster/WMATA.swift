@@ -1,7 +1,7 @@
 {
   "agencies": [
     {
-      "path": "rail-gtfs-static.zip"
+      "path": "wmata-gtfs-rail-static.zip"
     }
   ],
   "ignoreDuplicates": true,
