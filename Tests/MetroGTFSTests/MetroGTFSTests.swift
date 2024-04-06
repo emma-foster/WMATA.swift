@@ -363,4 +363,33 @@ final class MetroGTFSTests: XCTestCase {
         
         XCTAssertGreaterThanOrEqual(stopAreas.count, 2)
     }
+    
+    func testCreateAllTrips() throws {
+        let allRoutes = try GTFSRoute.all().map { $0.id }
+        
+        for trip in try GTFSTrip.all() {
+            XCTAssertTrue(allRoutes.contains(trip.routeID))
+        }
+    }
+    
+    func testCreateTrip() throws {
+        let trip = try GTFSTrip(id: .init("5570306_19799"))
+        
+        XCTAssertEqual(trip.routeID, .init("RED"))
+        XCTAssertEqual(trip.serviceID, .init("61_R"))
+        XCTAssertEqual(trip.headsign, "GLENMONT")
+        XCTAssertEqual(trip.direction, .oneDirection)
+        XCTAssertEqual(trip.block, nil)
+        XCTAssertEqual(trip.shapeID, .init("RRED_1"))
+    }
+    
+    func testCreateInvalidTrip() {
+        XCTAssertNil(try? GTFSTrip(id: .init("ABCDEFG")))
+    }
+    
+    func testCreateTripWithShorthand() throws {
+        let trip = try GTFSTrip("5570306_19799")
+        
+        XCTAssertEqual(trip.headsign, "GLENMONT")
+    }
 }

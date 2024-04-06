@@ -37,7 +37,7 @@ The following GTFS data types are supported
 | timeframes.txt | ✅ |
 | timepoints.txt | ❌ |
 | timepoints_times.txt | ❌ |
-| trips.txt | ❌ | 
+| trips.txt | ✅ | 
 
 
 Unlisted GTFS files are not provided by WMATA.
