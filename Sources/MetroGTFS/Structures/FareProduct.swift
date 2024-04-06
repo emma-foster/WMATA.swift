@@ -53,12 +53,15 @@ public struct GTFSFareProduct: Equatable, Hashable, Codable {
     
     /// Query the database for a fare product given the fare product ID and fare media ID
     public init(fareProductID: GTFSIdentifier<GTFSFareProduct>, fareMediaID: GTFSIdentifier<GTFSFareMedia> = .init("smartrip_card")) throws {
-        try self.init(where: TableColumn.fareProductID == fareProductID.rawValue && TableColumn.fareMediaID == fareMediaID.rawValue)
+        try self.init(where: GTFSFareProduct.databaseTable.sqlTable
+            .filter(TableColumn.fareProductID == fareProductID.rawValue)
+            .filter(TableColumn.fareMediaID == fareMediaID.rawValue)
+        )
     }
     
     /// Query the database for a fare product given the fare product ID and fare media ID
     public init(_ fareProductID: @autoclosure @escaping () -> String, fareMediaID: @autoclosure @escaping (() -> String?) = nil) throws {
-        try self.init(where: TableColumn.fareProductID == fareProductID() && TableColumn.fareMediaID == fareMediaID() ?? "smartrip_card")
+        try self.init(fareProductID: .init(fareProductID()), fareMediaID: .init(fareMediaID() ?? "smartrip_card"))
     }
 }
 

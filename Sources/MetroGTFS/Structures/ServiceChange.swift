@@ -48,22 +48,28 @@ public struct GTFSServiceChange: Equatable, Hashable, Codable {
     
     /// Query the database for a service change for the given service ID and date.
     public init(serviceID: GTFSIdentifier<GTFSService>, date: Date) throws {
-        try self.init(where: TableColumn.serviceID == serviceID.rawValue && TableColumn.date == date.as8CharacterNumber())
+        try self.init(where: GTFSServiceChange.databaseTable.sqlTable
+            .filter(TableColumn.serviceID == serviceID.rawValue)
+            .filter(TableColumn.date == date.as8CharacterNumber())
+        )
     }
     
     /// Query the database for a service change for the given service ID and date.
     public init(_ serviceID: @autoclosure @escaping () -> String, date: Date) throws {
-        try self.init(where: TableColumn.serviceID == serviceID() && TableColumn.date == date.as8CharacterNumber())
+        try self.init(serviceID: .init(serviceID()), date: date)
     }
     
     /// Query the database for a service change for the given service ID and date.
     public init(serviceID: GTFSIdentifier<GTFSService>, date: Int) throws {
-        try self.init(where: TableColumn.serviceID == serviceID.rawValue && TableColumn.date == date)
+        try self.init(where: GTFSServiceChange.databaseTable.sqlTable
+            .filter(TableColumn.serviceID == serviceID.rawValue)
+            .filter(TableColumn.date == date)
+        )
     }
     
     /// Query the database for a service change for the given service ID and date.
     public init(_ serviceID: @autoclosure @escaping () -> String, date: Int) throws {
-        try self.init(where: TableColumn.serviceID == serviceID() && TableColumn.date == date)
+        try self.init(serviceID: .init(serviceID()), date: date)
     }
 }
 

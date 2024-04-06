@@ -293,4 +293,39 @@ final class MetroGTFSTests: XCTestCase {
     func testCreateInvalidFareProduct() {
         XCTAssertNil(try? GTFSFareProduct("ABCDEFG"))
     }
+    
+    func testCreateAllFareLegRule() throws {
+        for fareLegRule in try GTFSFareLegRule.all() {
+            XCTAssertEqual(fareLegRule.networkID.rawValue, "Metrorail")
+        }
+    }
+    
+    func testCreateFareLegRule() throws {
+        let fareLegRule = try GTFSFareLegRule(
+            fromAreaID: .init("everywhere"),
+            toAreaID: .init("everywhere"),
+            fromService: .init("weekday_flat")
+        )
+        
+        XCTAssertEqual(fareLegRule.fareProduct, .init("200_flat"))
+    }
+    
+    func testCreateFareLegRuleShorthand() throws {
+        let fareLegRule = try GTFSFareLegRule(
+            fromAreaID: "STN_A01_C01",
+            toAreaID: "STN_A03",
+            fromService: "weekday_regular"
+        )
+        
+        XCTAssertEqual(fareLegRule.fareProduct, .init("200_regular"))
+        XCTAssertEqual(fareLegRule.networkID, .init("Metrorail"))
+    }
+    
+    func testCreateInvalidFareLegRule() {
+        XCTAssertNil(
+            try? GTFSFareLegRule(
+                networkID: .init("ABCDEFG")
+            )
+        )
+    }
 }

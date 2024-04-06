@@ -32,6 +32,9 @@ public enum GTFSDatabaseQueryError<Structure>: Error {
     
     /// No rows match the given predicate in the SQLite database table
     case notFound(predicate: Expression<Bool>, Table)
+    
+    /// No rows match the given predicate in the SQLite database table
+    case notFound(query: Table, Table)
 }
 
 /// Errors associated with decoding SQLite table rows into Swift types

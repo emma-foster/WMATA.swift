@@ -49,14 +49,14 @@ extension GTFSStructure {
         try self.init(row: row)
     }
     
-    /// Create this structure from any SQLite predicate. Useful for tables with composite primary keys.
-    init(where predicate: Expression<Bool>) throws {
+    /// Create this structure from many SQLite expressions. Useful when tables have composite primary keys.
+    init(where query: SQLite.Table) throws {
         let database = try GTFSDatabase()
         
-        let row = try database.one(Self.self, where: predicate)
+        let row = try database.one(Self.self, where: query)
         
         guard let row else {
-            throw GTFSDatabaseQueryError<Self>.notFound(predicate: predicate, Self.databaseTable.sqlTable)
+            throw GTFSDatabaseQueryError<Self>.notFound(query: query, Self.databaseTable.sqlTable)
         }
         
         try self.init(row: row)
@@ -80,6 +80,8 @@ extension GTFSStructure {
     }
     
     /// Create every GTFS structure of this type present in the database. Performs a database query.
+    // TODO: should this really be public?
+    
     public static func all(with id: GTFSIdentifier<Self>? = nil, in expression: Expression<String>? = nil) throws -> [Self] {
         let database = try GTFSDatabase()
         

@@ -75,7 +75,14 @@ extension GTFSDatabase {
     ) throws -> AnySequence<Row> {
         return try run(query: structure.databaseTable.sqlTable.where(column == id.rawValue))
     }
-
+    
+    /// Get all GTFS Structures of the given type that match the given query
+    func all<Structure: GTFSStructure>(
+        _ structure: Structure.Type,
+        where query: SQLite.Table
+    ) throws -> AnySequence<Row> {
+        return try self.run(query: query)
+    }
     
     /// Get a single structure of the given type with the given `id` in the given `column`. Defaults to using the primary key column.
     func one<Structure: GTFSStructure>(
@@ -85,12 +92,13 @@ extension GTFSDatabase {
     ) throws -> Row? {
         try run(query: structure.databaseTable.sqlTable.where(column == id.rawValue))
     }
-    
+
+    /// Get a single GTFS structure of the given type that matches the given query.
     func one<Structure: GTFSStructure>(
-        _  structure: Structure.Type,
-        where predicate: SQLite.Expression<Bool>
-    ) throws -> Row? {
-        try run(query: structure.databaseTable.sqlTable.where(predicate))
+        _ structure: Structure.Type,
+        where query: SQLite.Table
+    ) throws ->Row? {
+        return try self.run(query: query)
     }
 }
 
