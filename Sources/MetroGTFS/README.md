@@ -30,7 +30,7 @@ The following GTFS data types are supported
 | network.txt | 🟡 Not provided by WMATA but supported |
 | pathways.txt | ❌ | 
 | routes.txt | ✅ | 
-| shapes.txt | ❌ | 
+| shapes.txt | ✅ | 
 | stops.txt | ✅ | 
 | stop_times.txt | ❌ |
 | stop_areas.txt | ✅ |

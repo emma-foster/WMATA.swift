@@ -392,4 +392,36 @@ final class MetroGTFSTests: XCTestCase {
         
         XCTAssertEqual(trip.headsign, "GLENMONT")
     }
+    
+    func testCreateAllShapes() throws {
+        for shape in try GTFSShape.all() {
+            XCTAssertGreaterThanOrEqual(shape.distanceTraveled.value, 0)
+        }
+    }
+    
+    func testCreateShape() throws {
+        let shape = try GTFSShape(id: .init("RRED_1"), pointSequence: 2)
+        
+        XCTAssertEqual(shape.id, .init("RRED_1"))
+        XCTAssertEqual(shape.latitude, .init(value: 39.120001, unit: .degrees))
+        XCTAssertEqual(shape.longitude, .init(value: -77.164740, unit: .degrees))
+        XCTAssertEqual(shape.pointSequence, 2)
+        XCTAssertEqual(shape.distanceTraveled, .init(value: 0.0013, unit: .miles))
+    }
+    
+    func testCreateShapeWithShorthand() throws {
+        let shape = try GTFSShape("RRED_1", pointSequence: 2)
+        
+        XCTAssertEqual(shape.distanceTraveled, .init(value: 0.0013, unit: .miles))
+    }
+    
+    func testCreateInvalidShape() {
+        XCTAssertNil(try? GTFSShape("ABCDEFG", pointSequence: 1))
+    }
+    
+    func testCreateEntireShape() throws {
+        let shape = try GTFSShape.entireShape("RRED_1")
+        
+        XCTAssertEqual(shape.last?.distanceTraveled.value, 32.3763)
+    }
 }
