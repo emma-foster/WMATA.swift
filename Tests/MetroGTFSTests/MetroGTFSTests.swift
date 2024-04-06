@@ -328,4 +328,39 @@ final class MetroGTFSTests: XCTestCase {
             )
         )
     }
+    
+    func testCreateAllStopAreas() throws {
+        for stopArea in try GTFSStopArea.all() {
+            XCTAssertTrue(stopArea.areaID.rawValue.hasPrefix("everywhere") || stopArea.areaID.rawValue.hasPrefix("STN_"))
+            XCTAssertTrue(stopArea.stopID.rawValue.hasPrefix("STN_"))
+        }
+    }
+    
+    func testCreateStopArea() throws {
+        let stopArea = try GTFSStopArea(.init("STN_A03"), stopID: .init("STN_A03"))
+        
+        XCTAssertEqual(stopArea.areaID, .init("STN_A03"))
+    }
+    
+    func testCreateStopAreaWithShorthand() throws {
+        let stopArea = try GTFSStopArea("STN_A03", stopID: "STN_A03")
+        
+        XCTAssertEqual(stopArea.areaID, .init("STN_A03"))
+    }
+    
+    func testCreateInvalidStopArea() {
+        XCTAssertNil(try? GTFSStopArea(.init("STN_A03"), stopID: .init("ABCDEFG")))
+    }
+    
+    func testCreateAllStopAreasForAreaID() throws {
+        let stopAreas = try GTFSStopArea.all(areaID: .init("everywhere"))
+        
+        XCTAssertGreaterThanOrEqual(stopAreas.count, 98)
+    }
+    
+    func testCreateAllStopAreasForStopID() throws {
+        let stopAreas = try GTFSStopArea.all(stopID: .init("STN_N04"))
+        
+        XCTAssertGreaterThanOrEqual(stopAreas.count, 2)
+    }
 }

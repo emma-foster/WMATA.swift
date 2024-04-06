@@ -97,4 +97,13 @@ extension GTFSStructure {
         
         return try allRows.map { try .init(row: $0) }
     }
+    
+    /// Query the database for all structures of this type with that match the given query
+    static func all(where query: Table) throws -> [Self] {
+        let database = try GTFSDatabase()
+        
+        let rows = try database.all(Self.self, where: query)
+        
+        return try rows.map { try self.init(row: $0) }
+    }
 }
