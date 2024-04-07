@@ -28,7 +28,7 @@ The following GTFS data types are supported
 | feed_info.txt | ✅ | 
 | levels.txt | ✅ |
 | network.txt | 🟡 Not provided by WMATA but supported |
-| pathways.txt | ❌ | 
+| pathways.txt | ✅ | 
 | routes.txt | ✅ | 
 | shapes.txt | ✅ | 
 | stops.txt | ✅ | 

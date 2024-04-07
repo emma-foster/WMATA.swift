@@ -424,4 +424,32 @@ final class MetroGTFSTests: XCTestCase {
         
         XCTAssertEqual(shape.last?.distanceTraveled.value, 32.3763)
     }
+    
+    func testCreateAllPathways() throws {
+        for pathway in try GTFSPathway.all() {
+            XCTAssertGreaterThan(pathway.length.value, 0)
+        }
+    }
+    
+    func testCreatePathway() throws {
+        let pathway = try GTFSPathway(id: .init("C05_134128"))
+        
+        XCTAssertEqual(pathway.fromStopID, .init("NODE_C05_M_ESC_BT"))
+        XCTAssertEqual(pathway.toStopID, .init("NODE_C05_ESC1_TP"))
+        XCTAssertEqual(pathway.mode, .walkway)
+        XCTAssertEqual(pathway.isBidirectional, .bidirectional)
+        XCTAssertEqual(pathway.length, .init(value: 159.8745823, unit: .meters))
+        XCTAssertEqual(pathway.transversalTime, .init(value: 35.0, unit: .seconds))
+        XCTAssertEqual(pathway.signpostedAs, "OR Vienna/BL Franconia/Springfield/SV Wiehle-Reston East")
+    }
+    
+    func testCreatePathwayWithShorthand() throws {
+        let pathway = try GTFSPathway("C05_134128")
+
+        XCTAssertEqual(pathway.signpostedAs, "OR Vienna/BL Franconia/Springfield/SV Wiehle-Reston East")
+    }
+    
+    func testCreateInvalidPathway() {
+        XCTAssertNil(try? GTFSPathway("ABCDEFG"))
+    }
 }
