@@ -452,4 +452,57 @@ final class MetroGTFSTests: XCTestCase {
     func testCreateInvalidPathway() {
         XCTAssertNil(try? GTFSPathway("ABCDEFG"))
     }
+    
+    func testCreateTime() {
+        let time = GTFSTime(rawValue: "07:37:00")
+        
+        XCTAssertEqual(time?.hours, 7)
+        XCTAssertEqual(time?.minutes, 37)
+        XCTAssertEqual(time?.seconds, 0)
+    }
+    
+    func testCompareTime() {
+        let time = GTFSTime(rawValue: "07:37:00")!
+        let laterTime = GTFSTime(rawValue: "25:37:00")!
+        
+        XCTAssertTrue(time < laterTime)
+    }
+    
+    func testTimeEquality() {
+        let time = GTFSTime(rawValue: "07:37:00")!
+        let sameTime = GTFSTime(rawValue: "07:37:00")!
+
+        XCTAssertTrue(time == sameTime)
+    }
+    
+    func testCreateAllStopTimes() throws {
+        for stopTime in try GTFSStopTime.all() {
+            let trip = try GTFSTrip(id: stopTime.tripID)
+            
+            XCTAssertEqual(trip.id, stopTime.tripID)
+        }
+    }
+    
+    func testCreateStopTime() throws {
+        let stopTime = try GTFSStopTime(tripID: .init("5570301_19799"), stopSequence: 15)
+        
+        XCTAssertEqual(stopTime.tripID, .init("5570301_19799"))
+        XCTAssertEqual(stopTime.arrivalTime, .init(rawValue: "07:37:00")!)
+        XCTAssertEqual(stopTime.departureTime, .init(rawValue: "07:37:00")!)
+        XCTAssertEqual(stopTime.stopID, .init("PF_A01_1"))
+        XCTAssertEqual(stopTime.stopSequence, 15)
+        XCTAssertEqual(stopTime.pickupType, .regularlyScheduled)
+        XCTAssertEqual(stopTime.dropOffType, .regularlyScheduled)
+        XCTAssertEqual(stopTime.distanceTraveled, .init(value: 18.2420, unit: .miles))
+    }
+    
+    func testCreateStopTimeWithShorthand() throws {
+        let stopTime = try GTFSStopTime("5570301_19799", stopSequence: 15)
+        
+        XCTAssertEqual(stopTime.departureTime, .init(rawValue: "07:37:00")!)
+    }
+    
+    func testCreateInvalidStopTime() {
+        XCTAssertNil(try? GTFSStopTime("ABCDEFG", stopSequence: 1))
+    }
 }

@@ -97,9 +97,6 @@ extension GTFSShape: GTFSStructure {
         self.latitude = Measurement(value: try row.get(TableColumn.latitude), unit: .degrees)
         self.longitude = Measurement(value: try row.get(TableColumn.longitude), unit: .degrees)
         self.pointSequence = try row.get(TableColumn.pointSequence)
-        
-        let distanceTraveled = try row.get(TableColumn.distanceTraveled)
-        
-        self.distanceTraveled = Measurement(value: distanceTraveled, unit: .miles)
+        self.distanceTraveled = Measurement(value: try row.get(TableColumn.distanceTraveled), unit: .miles)
     }
 }
