@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SQLite
 
 /// A generic identifier. Used to associate a specific type with some structure used within the MetroGTFS
 ///
@@ -44,4 +45,22 @@ extension GTFSIdentifier: Codable {
         var container = encoder.singleValueContainer()
         try container.encode(self.rawValue)
     }
+}
+
+extension GTFSIdentifier: Value {
+    public static func fromDatatypeValue(_ datatypeValue: String) -> GTFSIdentifier<Structure> {
+        self.init(rawValue: datatypeValue)
+    }
+    
+    public var datatypeValue: String {
+        self.rawValue
+    }
+    
+    public typealias Datatype = String
+    
+    public static var declaredDatatype: String {
+        String.declaredDatatype
+    }
+    
+    
 }

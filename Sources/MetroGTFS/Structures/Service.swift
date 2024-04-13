@@ -105,7 +105,7 @@ public extension GTFSService {
     
     /// Get the service change that applies to the given date, if there is one
     func change(on date: Date) throws -> GTFSServiceChange.ChangeType? {
-        let change = try? GTFSServiceChange(serviceID: self.id, date: date)
+        let change = try? GTFSServiceChange(self.id, date)
         
         return change?.change ?? nil
     }

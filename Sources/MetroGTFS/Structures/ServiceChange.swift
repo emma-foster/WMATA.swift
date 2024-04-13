@@ -46,53 +46,45 @@ public struct GTFSServiceChange: Equatable, Hashable, Codable {
         self.change = change
     }
     
-    /// Query the database for a service change for the given service ID and date.
+    /// Query the database for a unique service change
     public init(serviceID: GTFSIdentifier<GTFSService>, date: Date) throws {
-        try self.init(where: GTFSServiceChange.databaseTable.sqlTable
-            .filter(TableColumn.serviceID == serviceID.rawValue)
-            .filter(TableColumn.date == date.as8CharacterNumber())
-        )
+        try self.init(serviceID, date.as8CharacterNumber())
     }
     
-    /// Query the database for a service change for the given service ID and date.
+    /// Query the database for a unique service change
     public init(_ serviceID: @autoclosure @escaping () -> String, date: Date) throws {
-        try self.init(serviceID: .init(serviceID()), date: date)
+        try self.init(serviceID(), date.as8CharacterNumber())
     }
     
-    /// Query the database for a service change for the given service ID and date.
+    /// Query the database for a service change for the given service ID and date in GTFS format as a number
+    ///
+    /// ## Example
+    /// ```
+    /// try GTFSServiceChange(.init("weekday_service_R"), 20240619)
+    /// ```
     public init(serviceID: GTFSIdentifier<GTFSService>, date: Int) throws {
-        try self.init(where: GTFSServiceChange.databaseTable.sqlTable
-            .filter(TableColumn.serviceID == serviceID.rawValue)
-            .filter(TableColumn.date == date)
-        )
+        try self.init(serviceID, date)
     }
     
-    /// Query the database for a service change for the given service ID and date.
+    /// Query the database for a service change for the given service ID and date in GTFS format as a number
+    ///
+    /// ## Example
+    /// ```
+    /// try GTFSServiceChange("weekday_service_R", 20240619)
+    /// ```
     public init(_ serviceID: @autoclosure @escaping () -> String, date: Int) throws {
-        try self.init(serviceID: .init(serviceID()), date: date)
+        try self.init(serviceID(), date)
     }
 }
 
-extension GTFSServiceChange: GTFSStructure {
-    var id: GTFSIdentifier<GTFSServiceChange> {
-        .init("\(self.serviceID), \(self.date.as8CharacterString())")
-    }
-    
-    enum TableColumn {
-        static let serviceID = Expression<String>("service_id")
-        static let date = Expression<Int>("date")
-        static let change = Expression<Int>("exception_type")
-    }
-    
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("calendar_dates"),
-        primaryKeyColumn: TableColumn.serviceID
-    )
+
+extension GTFSServiceChange: CompositeKeyQueryable {
+    static let table = Table("calendar_dates")
     
     init(row: Row) throws {
-        self.serviceID = .init(try row.get(TableColumn.serviceID))
+        self.serviceID = .init(try row.get(Expression<String>("service_id")))
         
-        let date = try row.get(TableColumn.date)
+        let date = try row.get(Expression<Int>("date"))
         
         guard let date = Date(from8CharacterNumber: date) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSServiceChange.self, key: "date")
@@ -100,12 +92,16 @@ extension GTFSServiceChange: GTFSStructure {
         
         self.date = date
         
-        let change = try row.get(TableColumn.change)
+        let change = try row.get(Expression<Int>("exception_type"))
         
         guard let changeType = ChangeType(rawValue: change) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSServiceChange.self, key: "changeType")
         }
         
         self.change = changeType
+    }
+    
+    static func createPrimaryKeyQuery<P1, P2>(_ primaryKey1: P1, _ primaryKey2: P2) -> Table where P1: Value, P1.Datatype: Equatable, P2: Value, P2.Datatype: Equatable {
+        table.filter(Expression<P1>("service_id") == primaryKey1 && Expression<P2>("date") == primaryKey2)
     }
 }

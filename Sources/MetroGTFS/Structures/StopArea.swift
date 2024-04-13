@@ -33,50 +33,39 @@ public struct GTFSStopArea: Equatable, Hashable, Codable {
     
     /// Query the database for a specific stop area
     public init(_ areaID: GTFSIdentifier<GTFSArea>, stopID: GTFSIdentifier<GTFSStop>) throws {
-        try self.init(where: GTFSStopArea.databaseTable.sqlTable
-            .filter(TableColumn.areaID == areaID.rawValue)
-            .filter(TableColumn.stopID == stopID.rawValue)
-        )
+        try self.init(areaID, stopID)
     }
     
     /// Query the database for a specific stop area
     public init(_ areaID: @autoclosure @escaping () -> String, stopID: @autoclosure @escaping () -> String) throws {
-        try self.init(.init(areaID()), stopID: .init(stopID()))
+        try self.init(areaID(), stopID())
     }
     
     /// Query the database for all stop areas that match the given area or stops
     public static func all(areaID: GTFSIdentifier<GTFSArea>? = nil, stopID: GTFSIdentifier<GTFSStop>? = nil) throws -> [GTFSStopArea] {
-        var query = GTFSStopArea.databaseTable.sqlTable
+        var query = GTFSStopArea.table
         
         if let areaID {
-            query = query.filter(TableColumn.areaID == areaID.rawValue)
+            query = query.filter(Expression<String>("area_id") == areaID.rawValue)
         }
         
         if let stopID {
-            query = query.filter(TableColumn.stopID == stopID.rawValue)
+            query = query.filter(Expression<String>("stop_id") == stopID.rawValue)
         }
         
         return try GTFSStopArea.all(where: query)
     }
 }
 
-extension GTFSStopArea: GTFSStructure {
-    var id: GTFSIdentifier<GTFSStopArea> {
-        .init("\(areaID.rawValue) \(stopID.rawValue)")
-    }
-    
-    enum TableColumn {
-        static let areaID = Expression<String>("area_id")
-        static let stopID = Expression<String>("stop_id")
-    }
-    
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: Table("stop_areas"),
-        primaryKeyColumn: TableColumn.areaID
-    )
+extension GTFSStopArea: CompositeKeyQueryable {
+    static let table = Table("stop_areas")
     
     init(row: Row) throws {
-        self.areaID = .init(try row.get(TableColumn.areaID))
-        self.stopID = .init(try row.get(TableColumn.stopID))
+        self.areaID = .init(try row.get(Expression<String>("area_id")))
+        self.stopID = .init(try row.get(Expression<String>("stop_id")))
+    }
+    
+    static func createPrimaryKeyQuery<P1, P2>(_ primaryKey1: P1, _ primaryKey2: P2) -> SQLite.Table where P1 : SQLite.Value, P2 : SQLite.Value, P1.Datatype : Equatable, P2.Datatype : Equatable {
+        table.filter(Expression<P1>("area_id") == primaryKey1 && Expression<P2>("stop_id") == primaryKey2)
     }
 }

@@ -144,11 +144,9 @@ public struct GTFSStop: Equatable, Hashable, Codable {
     ///
     /// [More info about parent stations](https://gtfs.org/schedule/reference/#stopstxt)
     public static func all(withParentStation id: GTFSIdentifier<GTFSStop>) throws -> [GTFSStop] {
-        let database = try GTFSDatabase()
+        let query = GTFSStop.table.filter(Expression<String?>("parent_station") == id.rawValue)
         
-        let allStopRows = try database.all(GTFSStop.self, with: id, in: TableColumn.parentStation)
-        
-        return try allStopRows.map { try GTFSStop(row: $0) }
+        return try GTFSStop.all(where: query)
     }
     
     /// Create all Stops with the given parent station
@@ -159,59 +157,48 @@ public struct GTFSStop: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSStop: GTFSStructure {
-    /// Columns in the SQLite `stops` table
-    enum TableColumn {
-        static let id = Expression<String>("stop_id")
-        static let name = Expression<String>("stop_name")
-        static let description = Expression<String?>("stop_desc")
-        static let latitude = Expression<Double>("stop_lat")
-        static let longitude = Expression<Double>("stop_lon")
-        static let zoneID = Expression<String>("zone_id")
-        static let locationType = Expression<Int>("location_type")
-        static let parentStation = Expression<String?>("parent_station")
-        static let wheelchairBoarding = Expression<Int>("wheelchair_boarding")
-        static let levelID = Expression<String?>("level_id")
-    }
+extension GTFSStop: SimpleQueryable {
+    static let primaryKeyColumn = Expression<String>("stop_id")
     
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("stops"),
-        primaryKeyColumn: TableColumn.id
-    )
+    static let table = Table("stops")
     
     /// Create a Stop from a row in the GTFS database's stops table
     init(row: Row) throws {
-        guard let locationType = LocationType(rawValue: try row.get(TableColumn.locationType)) else {
+        self.id = GTFSIdentifier(try row.get(Expression<String>("stop_id")))
+        self.name = try row.get(Expression<String>("stop_name"))
+        self.description = try row.get(Expression<String?>("stop_desc"))
+        self.location = GTFSCoordinates(
+            latitude: try row.get(Expression<Double>("stop_lat")),
+            longitude: try row.get(Expression<Double>("stop_lon"))
+        )
+        self.zoneID = try row.get(Expression<String>("zone_id"))
+        
+        guard let locationType = LocationType(rawValue: try row.get(Expression<Int>("location_type"))) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSStop.self, key: "location_type")
         }
         
+        self.locationType = locationType
+        
         var parentStation: GTFSIdentifier<GTFSStop>? = nil
         
-        if let parentStationID = try row.get(TableColumn.parentStation) {
-            parentStation = GTFSIdentifier<GTFSStop>(parentStationID)
+        if let parentStationID = try row.get(Expression<String?>("parent_station")) {
+            parentStation = .init(parentStationID)
         }
         
-        guard let wheelchairBoarding = WheelchairBoarding(rawValue:  try row.get(TableColumn.wheelchairBoarding)) else {
+        self.parentStation = parentStation
+        
+        
+        guard let wheelchairBoarding = WheelchairBoarding(rawValue:  try row.get(Expression<Int>("wheelchair_boarding"))) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSStop.self, key: "wheelchair_boarding")
         }
+        self.wheelchairBoarding = wheelchairBoarding
         
         var level: GTFSIdentifier<GTFSLevel>? = nil
         
-        if let levelID = try row.get(TableColumn.levelID) {
-            level = GTFSIdentifier<GTFSLevel>(levelID)
+        if let levelID = try row.get(Expression<String?>("level_id")) {
+            level = .init(levelID)
         }
         
-        self.id = GTFSIdentifier(try row.get(TableColumn.id))
-        self.name = try row.get(TableColumn.name)
-        self.description = try row.get(TableColumn.description)
-        self.location = GTFSCoordinates(
-            latitude: try row.get(TableColumn.latitude),
-            longitude: try row.get(TableColumn.longitude)
-        )
-        self.zoneID = try row.get(TableColumn.zoneID)
-        self.locationType = locationType
-        self.parentStation = parentStation
-        self.wheelchairBoarding = wheelchairBoarding
         self.level = level
     }
 }

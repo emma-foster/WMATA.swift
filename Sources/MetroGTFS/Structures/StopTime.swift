@@ -68,69 +68,52 @@ public struct GTFSStopTime: Equatable, Hashable, Codable {
     
     /// Query the database for a unique stop time
     public init(tripID: GTFSIdentifier<GTFSTrip>, stopSequence: Int) throws {
-        try self.init(where: GTFSStopTime.databaseTable.sqlTable
-            .filter(TableColumn.tripID == tripID.rawValue)
-            .filter(TableColumn.stopSequence == stopSequence)
-        )
+        try self.init(tripID, stopSequence)
     }
     
     /// Query the database for a unique stop time
     public init(_ tripID: @autoclosure @escaping () -> String, stopSequence: Int) throws {
-        try self.init(tripID: .init(tripID()), stopSequence: stopSequence)
+        try self.init(tripID(), stopSequence)
     }
 }
 
-extension GTFSStopTime: GTFSStructure {
-    var id: GTFSIdentifier<GTFSStopTime> {
-        .init([self.tripID.rawValue, String(self.stopSequence)].joined())
+extension GTFSStopTime: CompositeKeyQueryable {
+    static func createPrimaryKeyQuery<P1, P2>(_ primaryKey1: P1, _ primaryKey2: P2) -> SQLite.Table where P1 : SQLite.Value, P2 : SQLite.Value, P1.Datatype : Equatable, P2.Datatype : Equatable {
+        table.filter(Expression<P1>("trip_id") == primaryKey1 && Expression<P2>("stop_sequence") == primaryKey2)
     }
     
-    enum TableColumn {
-        static let tripID = Expression<String>("trip_id")
-        static let arrivalTime = Expression<String>("arrival_time")
-        static let departureTIme = Expression<String>("departure_time")
-        static let stopID = Expression<String>("stop_id")
-        static let stopSequence = Expression<Int>("stop_sequence")
-        static let pickupType = Expression<Int>("pickup_type")
-        static let dropOffType = Expression<Int>("drop_off_type")
-        static let distanceTraveled = Expression<Double>("shape_dist_traveled")
-    }
-    
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("stop_times"),
-        primaryKeyColumn: TableColumn.tripID
-    )
+    static let table = SQLite.Table("stop_times")
     
     init(row: Row) throws {
-        self.tripID = .init(try row.get(TableColumn.tripID))
+        self.tripID = .init(try row.get(Expression<String>("trip_id")))
         
-        guard let arrivalTime = GTFSTime(rawValue: try row.get(TableColumn.arrivalTime)) else {
+        guard let arrivalTime = GTFSTime(rawValue: try row.get(Expression<String>("arrival_time"))) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSStopTime.self, key: "arrival_time")
         }
         
         self.arrivalTime = arrivalTime
         
-        guard let departureTime = GTFSTime(rawValue: try row.get(TableColumn.departureTIme)) else {
+        guard let departureTime = GTFSTime(rawValue: try row.get(Expression<String>("departure_time"))) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSStopTime.self, key: "departure_time")
         }
         
         self.departureTime = departureTime
         
-        self.stopID = .init(try row.get(TableColumn.stopID))
-        self.stopSequence = try row.get(TableColumn.stopSequence)
+        self.stopID = .init(try row.get(Expression<String>("stop_id")))
+        self.stopSequence = try row.get(Expression<Int>("stop_sequence"))
         
-        guard let pickupType = PickupDropOff(rawValue: try row.get(TableColumn.pickupType)) else {
+        guard let pickupType = PickupDropOff(rawValue: try row.get(Expression<Int>("pickup_type"))) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSStopTime.self, key: "pickup_type")
         }
         
         self.pickupType = pickupType
         
-        guard let dropOffType = PickupDropOff(rawValue: try row.get(TableColumn.dropOffType)) else {
+        guard let dropOffType = PickupDropOff(rawValue: try row.get(Expression<Int>("drop_off_type"))) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSStopTime.self, key: "drop_off_type")
         }
         
         self.dropOffType = dropOffType
         
-        self.distanceTraveled = .init(value: try row.get(TableColumn.distanceTraveled), unit: .miles)
+        self.distanceTraveled = .init(value: try row.get(Expression<Double>("shape_dist_traveled")), unit: .miles)
     }
 }

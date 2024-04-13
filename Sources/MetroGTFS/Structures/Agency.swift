@@ -49,39 +49,30 @@ public struct GTFSAgency: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSAgency: GTFSStructure {
+extension GTFSAgency: SimpleQueryable {
+    static let table = SQLite.Table("agency")
+    
+    static let primaryKeyColumn = Expression<String>("agency_id")
+    
     /// Create an Agency from a database row in the `agency` table
     init(row: Row) throws {
-        self.id = GTFSIdentifier(try row.get(TableColumn.id))
+        self.id = GTFSIdentifier(try row.get(Expression<String>("agency_id")))
         
         do {
-            self.name = try row.get(TableColumn.name)
-            self.url = try row.get(TableColumn.url)
+            self.name = try row.get(Expression<String>("agency_name"))
+            self.url = try row.get(Expression<URL>("agency_url"))
             
-            let timeZone = TimeZone(identifier: try row.get(TableColumn.timeZone))
+            let timeZone = TimeZone(identifier: try row.get(Expression<String>("agency_timezone")))
             guard let timeZone else {
                 throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSAgency.self, key: "timeZone")
             }
             
             self.timeZone = timeZone
-            self.language = try row.get(TableColumn.language)
-            self.phone = try row.get(TableColumn.phone)
-            self.fareURL = try row.get(TableColumn.fareURL)
+            self.language = try row.get(Expression<String>("agency_lang"))
+            self.phone = try row.get(Expression<String>("agency_phone"))
+            self.fareURL = try row.get(Expression<URL>("agency_fare_url"))
         } catch {
             throw GTFSDatabaseError.invalid(row)
         }
     }
-    
-    /// Columns in the GTFS Static agency datatable table
-    enum TableColumn {
-        static let id = Expression<String>("agency_id")
-        static let name = Expression<String>("agency_name")
-        static let url = Expression<URL>("agency_url")
-        static let timeZone = Expression<String>("agency_timezone")
-        static let language = Expression<String>("agency_lang")
-        static let phone = Expression<String>("agency_phone")
-        static let fareURL = Expression<URL>("agency_fare_url")
-    }
-    
-    static let databaseTable = GTFSDatabase.Table(sqlTable: SQLite.Table("agency"), primaryKeyColumn: GTFSAgency.TableColumn.id)
 }

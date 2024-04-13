@@ -83,11 +83,7 @@ final class MetroGTFSTests: XCTestCase {
     }
     
     func testCreateAllAgencies() throws {
-        let database = try GTFSDatabase()
-        
-        for row in try database.all(GTFSAgency.self) {
-            let agency = try GTFSAgency(row: row)
-            
+        for agency in try GTFSAgency.all() {
             XCTAssertEqual(agency.name, "WMATA") // there's only one agency in WMATA's data
         }
     }
