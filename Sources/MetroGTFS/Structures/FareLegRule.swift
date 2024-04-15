@@ -162,7 +162,8 @@ extension GTFSFareLegRule: GTFSStructure {
             fromAreaID.rawValue,
             toAreaID.rawValue,
             fromService?.rawValue,
-            toService?.rawValue
+            toService?.rawValue,
+            fareProduct.rawValue
         ].compactMap { $0 }.joined())
     }
     
