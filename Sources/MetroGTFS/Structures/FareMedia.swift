@@ -68,23 +68,16 @@ public struct GTFSFareMedia: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSFareMedia: GTFSStructure {
-    enum TableColumn {
-        static let id = Expression<String>("fare_media_id")
-        static let name = Expression<String>("fare_media_name")
-        static let mediaType = Expression<Int>("fare_media_type")
-    }
+extension GTFSFareMedia: SimpleQueryable {
+    static let primaryKeyColumn = Expression<String>("fare_media_id")
     
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("fare_media"),
-        primaryKeyColumn: TableColumn.id
-    )
+    static let table = Table("fare_media")
     
     init(row: Row) throws {
-        self.id = .init(try row.get(TableColumn.id))
-        self.name = try row.get(TableColumn.name)
+        self.id = .init(try row.get(Expression<String>("fare_media_id")))
+        self.name = try row.get(Expression<String>("fare_media_name"))
         
-        let mediaType = try row.get(TableColumn.mediaType)
+        let mediaType = try row.get(Expression<Int>("fare_media_type"))
         
         guard let mediaType = FareMediaType(rawValue: mediaType) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSFareMedia.self, key: "fare_media_type")

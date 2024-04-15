@@ -121,7 +121,7 @@ extension Queryable {
     static func all(where query: Table = Self.table) throws -> [Self] {
         let database = try GTFSDatabase()
         
-        return try database.run(query: Self.table).map(Self.init)
+        return try database.run(query: query).map(Self.init)
     }
 }
 

@@ -30,17 +30,12 @@ public struct GTFSArea: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSArea: GTFSStructure {
-    enum TableColumn {
-        static let id = Expression<String>("area_id")
-    }
+extension GTFSArea: SimpleQueryable {
+    static let primaryKeyColumn = Expression<String>("area_id")
     
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("areas"),
-        primaryKeyColumn: TableColumn.id
-    )
+    static let table = Table("areas")
     
     init(row: Row) throws {
-        self.id = .init(try row.get(TableColumn.id))
+        self.id = .init(try row.get(Expression<String>("area_id")))
     }
 }

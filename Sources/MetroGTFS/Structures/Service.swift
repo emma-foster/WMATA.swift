@@ -175,85 +175,23 @@ public extension GTFSService {
     }
 }
 
-extension GTFSService: GTFSStructure {
-    public enum TableColumn {
-        static let id = Expression<String>("service_id")
-        static let monday = Expression<Int>("monday")
-        static let tuesday = Expression<Int>("tuesday")
-        static let wednesday = Expression<Int>("wednesday")
-        static let thursday = Expression<Int>("thursday")
-        static let friday = Expression<Int>("friday")
-        static let saturday = Expression<Int>("saturday")
-        static let sunday = Expression<Int>("sunday")
-        static let startDate = Expression<Int>("start_date")
-        static let endDate = Expression<Int>("end_date")
-    }
+extension GTFSService: SimpleQueryable {
+    static let table = Table("calendar")
     
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("calendar"),
-        primaryKeyColumn: TableColumn.id
-    )
+    static let primaryKeyColumn = SQLite.Expression<String>("service_id")
     
     init(row: Row) throws {
-        self.id = .init(try row.get(TableColumn.id))
-                
-        let monday = try row.get(TableColumn.monday)
+        self.id = .init(try row.get(Expression<String>("service_id")))
         
-        guard let monday = Service(rawValue: monday) else {
-            throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSService.self, key: "monday")
-        }
+        self.monday = try parseDay(Expression<Int>("monday"), row: row)
+        self.tuesday = try parseDay(Expression<Int>("tuesday"), row: row)
+        self.wednesday = try parseDay(Expression<Int>("wednesday"), row: row)
+        self.thursday = try parseDay(Expression<Int>("thursday"), row: row)
+        self.friday = try parseDay(Expression<Int>("friday"), row: row)
+        self.saturday = try parseDay(Expression<Int>("saturday"), row: row)
+        self.sunday = try parseDay(Expression<Int>("sunday"), row: row)
         
-        self.monday = monday
-        
-        let tuesday = try row.get(TableColumn.tuesday)
-        
-        guard let tuesday = Service(rawValue: tuesday) else {
-            throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSService.self, key: "tuesday")
-        }
-        
-        self.tuesday = tuesday
-        
-        let wednesday = try row.get(TableColumn.wednesday)
-        
-        guard let wednesday = Service(rawValue: wednesday) else {
-            throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSService.self, key: "wednesday")
-        }
-        
-        self.wednesday = wednesday
-        
-        let thursday = try row.get(TableColumn.thursday)
-        
-        guard let thursday = Service(rawValue: thursday) else {
-            throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSService.self, key: "thursday")
-        }
-        
-        self.thursday = thursday
-        
-        let friday = try row.get(TableColumn.friday)
-        
-        guard let friday = Service(rawValue: friday) else {
-            throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSService.self, key: "friday")
-        }
-        
-        self.friday = friday
-        
-        let saturday = try row.get(TableColumn.saturday)
-        
-        guard let saturday = Service(rawValue: saturday) else {
-            throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSService.self, key: "saturday")
-        }
-        
-        self.saturday = saturday
-        
-        let sunday = try row.get(TableColumn.sunday)
-        
-        guard let sunday = Service(rawValue: sunday) else {
-            throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSService.self, key: "sunday")
-        }
-        
-        self.sunday = sunday
-        
-        let startDate = try row.get(TableColumn.startDate)
+        let startDate = try row.get(Expression<Int>("start_date"))
         
         guard let startDate = Date(from8CharacterNumber: startDate) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSService.self, key: "start_date")
@@ -261,7 +199,7 @@ extension GTFSService: GTFSStructure {
         
         self.startDate = startDate
         
-        let endDate = try row.get(TableColumn.endDate)
+        let endDate = try row.get(Expression<Int>("end_date"))
         
         guard let endDate = Date(from8CharacterNumber: endDate) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSService.self, key: "end_date")
@@ -269,4 +207,14 @@ extension GTFSService: GTFSStructure {
         
         self.endDate = endDate
     }
+}
+
+private func parseDay(_ dayColumn: Expression<Int>, row: Row) throws -> GTFSService.Service {
+    let day = try row.get(dayColumn)
+    
+    guard let day = GTFSService.Service(rawValue: day) else {
+        throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSService.self, key: dayColumn.template)
+    }
+    
+    return day
 }

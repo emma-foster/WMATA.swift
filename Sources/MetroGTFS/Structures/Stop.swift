@@ -144,16 +144,14 @@ public struct GTFSStop: Equatable, Hashable, Codable {
     ///
     /// [More info about parent stations](https://gtfs.org/schedule/reference/#stopstxt)
     public static func all(withParentStation id: GTFSIdentifier<GTFSStop>) throws -> [GTFSStop] {
-        let query = GTFSStop.table.filter(Expression<String?>("parent_station") == id.rawValue)
-        
-        return try GTFSStop.all(where: query)
+        try all(where: table.filter(Expression<String?>("parent_station") != nil && Expression<String>("parent_station") == id.rawValue))
     }
     
     /// Create all Stops with the given parent station
     ///
     /// See ``all(withParentStation:)-6rk0p``
     public static func all(withParentStation idString: @autoclosure @escaping () -> String) throws -> [GTFSStop] {
-        return try self.all(withParentStation: .init(idString()))
+        return try all(withParentStation: .init(idString()))
     }
 }
 

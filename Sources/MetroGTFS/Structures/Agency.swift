@@ -58,21 +58,16 @@ extension GTFSAgency: SimpleQueryable {
     init(row: Row) throws {
         self.id = GTFSIdentifier(try row.get(Expression<String>("agency_id")))
         
-        do {
-            self.name = try row.get(Expression<String>("agency_name"))
-            self.url = try row.get(Expression<URL>("agency_url"))
-            
-            let timeZone = TimeZone(identifier: try row.get(Expression<String>("agency_timezone")))
-            guard let timeZone else {
-                throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSAgency.self, key: "timeZone")
-            }
-            
-            self.timeZone = timeZone
-            self.language = try row.get(Expression<String>("agency_lang"))
-            self.phone = try row.get(Expression<String>("agency_phone"))
-            self.fareURL = try row.get(Expression<URL>("agency_fare_url"))
-        } catch {
-            throw GTFSDatabaseError.invalid(row)
+        self.name = try row.get(Expression<String>("agency_name"))
+        self.url = try row.get(Expression<URL>("agency_url"))
+        
+        guard let timeZone = TimeZone(identifier: try row.get(Expression<String>("agency_timezone"))) else {
+            throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSAgency.self, key: "timeZone")
         }
+        
+        self.timeZone = timeZone
+        self.language = try row.get(Expression<String>("agency_lang"))
+        self.phone = try row.get(Expression<String>("agency_phone"))
+        self.fareURL = try row.get(Expression<URL>("agency_fare_url"))
     }
 }

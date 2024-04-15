@@ -137,37 +137,25 @@ public struct GTFSRoute: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSRoute: GTFSStructure {
-    /// Columns in the SQLite `routes` table
-    enum TableColumn {
-        static let id = Expression<String>("route_id")
-        static let agencyID = Expression<String>("agency_id")
-        static let shortName = Expression<String>("route_short_name")
-        static let longName = Expression<String?>("route_long_name")
-        static let routeType = Expression<Int>("route_type")
-        static let routeURL = Expression<String?>("route_url")
-        static let hexColor = Expression<String?>("route_color")
-        static let hexTextColor = Expression<String?>("route_text_color")
-//        static let asRoute = Expression<String>("as_route") // TODO: Currently not in DB, add it
-        static let networkID = Expression<String>("network_id")
-    }
+extension GTFSRoute: SimpleQueryable {
+    static let primaryKeyColumn = Expression<String>("route_id")
     
-    static let databaseTable = GTFSDatabase.Table(sqlTable: SQLite.Table("routes"), primaryKeyColumn: TableColumn.id)
+    static let table = Table("routes")
     
     // Create a Route from a row in the GTFS database's `routes` table
     init(row: Row) throws {
-        self.id = .init(try row.get(TableColumn.id))
-        self.agencyID = .init(try row.get(TableColumn.agencyID))
-        self.shortName = try row.get(TableColumn.shortName)
-        self.longLame = try row.get(TableColumn.longName)
+        self.id = .init(try row.get(Expression<String>("route_id")))
+        self.agencyID = .init(try row.get(Expression<String>("agency_id")))
+        self.shortName = try row.get(Expression<String>("route_short_name"))
+        self.longLame = try row.get(Expression<String?>("route_long_name"))
         
-        guard let routeType = RouteType(rawValue: try row.get(TableColumn.routeType)) else {
+        guard let routeType = RouteType(rawValue: try row.get(Expression<Int>("route_type"))) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSRoute.self, key: "routeType")
         }
         
         self.routeType = routeType
         
-        let url = try row.get(TableColumn.routeURL)
+        let url = try row.get(Expression<String?>("route_url"))
         
         if let url {
             self.url = URL(string: url)
@@ -175,9 +163,9 @@ extension GTFSRoute: GTFSStructure {
             self.url = nil
         }
                 
-        self.hexColor = try row.get(TableColumn.hexColor) ?? "FFFFFF"
-        self.hexTextColor = try row.get(TableColumn.hexTextColor) ?? "000000"
-        self.networkID = .init(try row.get(TableColumn.networkID))
+        self.hexColor = try row.get(Expression<String?>("route_color")) ?? "FFFFFF"
+        self.hexTextColor = try row.get(Expression<String?>("route_text_color")) ?? "000000"
+        self.networkID = .init(try row.get(Expression<String>("network_id")))
         
         // TODO: Get `as_route` field into GTFS database. Currently, it's missing. Likely because `as_route` is an experimental field. So, this is hard coded to the value WMATA provides for all routes.
         self.asRoute = .oneRoute

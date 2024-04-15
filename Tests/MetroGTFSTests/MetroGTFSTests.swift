@@ -11,11 +11,7 @@ import WMATA
 
 final class MetroGTFSTests: XCTestCase {
     func testCreateAllStops() throws {
-        let database = try GTFSDatabase()
-        
-        for row in try database.all(GTFSStop.self) {
-            let stop = try GTFSStop(row: row)
-            
+        for stop in try GTFSStop.all() {
             // Does the Stop ID from the database match one of the valid location type prefixes?
             let prefix = stop.id.rawValue.prefixMatch(of: try Regex("^(ENT|NODE|PF|PLF|STN)"))
             
@@ -47,19 +43,14 @@ final class MetroGTFSTests: XCTestCase {
     }
     
     func testCreateAllStopsWithParentStation() throws {
-        let stops = try GTFSStop.all(withParentStation: .init("STN_B01_F01"))
-        
-        for stop in stops {
-            XCTAssert(stop.name.contains("CHINATOWN") || stop.name.contains("GALLERY PL"), stop.name)
+        for stop in try GTFSStop.all(withParentStation: "STN_B01_F01") {
+            print(stop)
+            XCTAssert(stop.name.contains("CHINATOWN") || stop.name.contains("GALLERY PLACE"), stop.name)
         }
     }
     
     func testCreateAllLevels() throws {
-        let database = try GTFSDatabase()
-        
-        for row in try database.all(GTFSLevel.self) {
-            let level = try GTFSLevel(row: row)
-            
+        for level in try GTFSLevel.all() {            
             let stationCode = level.id.rawValue.prefix(3)
             
             XCTAssertNotNil(Station(rawValue: String(stationCode)))
@@ -102,6 +93,12 @@ final class MetroGTFSTests: XCTestCase {
     
     func testCreateAnInvalidAgency() {
         XCTAssertNil(try? GTFSAgency("WMATA"))
+    }
+    
+    func testCreateAllFeedInfo() throws {
+        for feedInfo in try GTFSFeedInfo.all() {
+            XCTAssertEqual(feedInfo.publisherName, "WMATA")
+        }
     }
     
     func testCreateFeedInfo() throws {

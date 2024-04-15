@@ -10,7 +10,7 @@ import SQLite
 
 /// A [GTFS Level](https://gtfs.org/schedule/reference/#levelstxt). Describes the different physical levels and floors in a station. Can be used with pathways to navigate stations.
 ///
-/// ```swift
+/// ```
 /// let level = try GTFSLevel("B05_L1")
 ///
 /// level.name // "Mezzanine"
@@ -37,24 +37,15 @@ public struct GTFSLevel: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSLevel: GTFSStructure {
-    /// Columns in the GTFS Static levels database table
-    enum TableColumn {
-        static let id = Expression<String>("level_id")
-        static let index = Expression<Double>("level_index")
-        static let name = Expression<String>("level_name")
-    }
+extension GTFSLevel: SimpleQueryable {
+    static let primaryKeyColumn = Expression<String>("level_id")
     
-    static let databaseTable = GTFSDatabase.Table(sqlTable: SQLite.Table("levels"), primaryKeyColumn: GTFSLevel.TableColumn.id)
+    static let table = Table("levels")
     
     /// Create a Level from a database row from the `levels` table
     init(row: Row) throws {
-        do {
-            self.id = GTFSIdentifier(try row.get(TableColumn.id))
-            self.index = Int(try row.get(TableColumn.index))
-            self.name = try row.get(TableColumn.name)
-        } catch {
-            throw GTFSDatabaseError.invalid(row)
-        }
+        self.id = .init(try row.get(Expression<String>("level_id")))
+        self.index = Int(try row.get(Expression<Double>("level_index")))
+        self.name = try row.get(Expression<String>("level_name"))
     }
 }

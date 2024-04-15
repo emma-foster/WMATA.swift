@@ -121,58 +121,43 @@ public struct GTFSPathway: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSPathway: GTFSStructure {
-    enum TableColumn {
-        static let id = Expression<String>("pathway_id")
-        static let fromStopID = Expression<String>("from_stop_id")
-        static let toStopID = Expression<String>("to_stop_id")
-        static let mode = Expression<Int>("pathway_mode")
-        static let isBidirectional = Expression<Int>("is_bidirectional")
-        static let length = Expression<Double>("length")
-        static let transversalTime = Expression<Int>("traversal_time")
-        static let stairCount = Expression<Int?>("stair_count")
-        static let maxSlope = Expression<Double?>("max_slope")
-        static let minimumWidth = Expression<Double?>("min_width")
-        static let signpostedAs = Expression<String?>("signposted_as")
-    }
+extension GTFSPathway: SimpleQueryable {
+    static let primaryKeyColumn = Expression<String>("pathway_id")
     
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("pathways"),
-        primaryKeyColumn: TableColumn.id
-    )
+    static let table = Table("pathways")
     
     init(row: Row) throws {
-        self.id = .init(try row.get(TableColumn.id))
-        self.fromStopID = .init(try row.get(TableColumn.fromStopID))
-        self.toStopID = .init(try row.get(TableColumn.toStopID))
+        self.id = .init(try row.get(Expression<String>("pathway_id")))
+        self.fromStopID = .init(try row.get(Expression<String>("from_stop_id")))
+        self.toStopID = .init(try row.get(Expression<String>("to_stop_id")))
         
-        guard let mode = Mode(rawValue: try row.get(TableColumn.mode)) else {
+        guard let mode = Mode(rawValue: try row.get(Expression<Int>("pathway_mode"))) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSPathway.self, key: "pathway_mode")
         }
         
         self.mode = mode
         
-        guard let isBidirectional = Bidirectional(rawValue: try row.get(TableColumn.isBidirectional)) else {
+        guard let isBidirectional = Bidirectional(rawValue: try row.get(Expression<Int>("is_bidirectional"))) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSPathway.self, key: "is_bidirectional")
         }
         
         self.isBidirectional = isBidirectional
-        self.length = Measurement(value: try row.get(TableColumn.length), unit: .meters)
-        self.transversalTime = Measurement(value: Double(try row.get(TableColumn.transversalTime)), unit: .seconds)
+        self.length = Measurement(value: try row.get(Expression<Double>("length")), unit: .meters)
+        self.transversalTime = Measurement(value: Double(try row.get(Expression<Int>("traversal_time"))), unit: .seconds)
         
-        if let stairCount = try row.get(TableColumn.stairCount) {
+        if let stairCount = try row.get(Expression<Int?>("stair_count")) {
             self.stairCount = stairCount
         }
         
-        if let maxSlope = try row.get(TableColumn.maxSlope) {
+        if let maxSlope = try row.get(Expression<Double?>("max_slope")) {
             self.maxSlope = maxSlope
         }
         
-        if let minimumWidth = try row.get(TableColumn.minimumWidth) {
+        if let minimumWidth = try row.get(Expression<Double?>("min_width")) {
             self.minimumWidth = Measurement(value: minimumWidth, unit: .meters)
         }
         
-        if let signpostedAs = try row.get(TableColumn.signpostedAs) {
+        if let signpostedAs = try row.get(Expression<String?>("signposted_as")) {
             self.signpostedAs = signpostedAs
         }
     }

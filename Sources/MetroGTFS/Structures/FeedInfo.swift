@@ -45,38 +45,24 @@ public struct GTFSFeedInfo: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSFeedInfo: GTFSStructure {
+extension GTFSFeedInfo: SimpleQueryable {
+    static let primaryKeyColumn = Expression<String>("feed_publisher_name")
+    
+    static let table = Table("feed_info")
+    
     public var id: GTFSIdentifier<GTFSFeedInfo> { .init(publisherName) }
     
-    enum TableColumn {
-        static let publisherName = Expression<String>("feed_publisher_name")
-        static let publisherURL = Expression<URL>("feed_publisher_url")
-        static let language = Expression<String>("feed_lang")
-        static let startDate = Expression<Int?>("feed_start_date")
-        static let endDate = Expression<Int?>("feed_end_date")
-    }
-    
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("feed_info"),
-        primaryKeyColumn: GTFSFeedInfo.TableColumn.publisherName
-    )
-    
     init(row: Row) throws {
-        do {
-            self.publisherName = try row.get(TableColumn.publisherName)
-            self.publisherURL = try row.get(TableColumn.publisherURL)
-            self.language = try row.get(TableColumn.language)
-            
-            if let startDate = try row.get(TableColumn.startDate) {
-                self.startDate = Date(from8CharacterString: String(startDate))
-            }
-            
-            if let endDate = try row.get(TableColumn.endDate) {
-                self.endDate = Date(from8CharacterString: String(endDate))
-            }
-        } catch {
-            print(error)
-            throw GTFSDatabaseError.invalid(row)
+        self.publisherName = try row.get(Expression<String>("feed_publisher_name"))
+        self.publisherURL = try row.get(Expression<URL>("feed_publisher_url"))
+        self.language = try row.get(Expression<String>("feed_lang"))
+        
+        if let startDate = try row.get(Expression<Int?>("feed_start_date")) {
+            self.startDate = Date(from8CharacterString: String(startDate))
+        }
+        
+        if let endDate = try row.get(Expression<Int?>("feed_end_date")) {
+            self.endDate = Date(from8CharacterString: String(endDate))
         }
     }
 }

@@ -56,20 +56,17 @@ public struct GTFSShape: Equatable, Hashable, Codable {
     
     /// Query the database for a specific shape
     public init(id: GTFSIdentifier<GTFSShape>, pointSequence: Int) throws {
-        try self.init(where: GTFSShape.databaseTable.sqlTable
-            .filter(TableColumn.id == id.rawValue)
-            .filter(TableColumn.pointSequence == pointSequence)
-        )
+        try self.init(id, pointSequence)
     }
     
     /// Query the database for a specific shape
     public init(_ id: @autoclosure @escaping () -> String, pointSequence: Int) throws {
-        try self.init(id: .init(id()), pointSequence: pointSequence)
+        try self.init(id(), pointSequence)
     }
     
     /// Get all `GTFSShape` points within the given shape.
     public static func entireShape(id: GTFSIdentifier<GTFSShape>) throws -> [GTFSShape] {
-        try self.all(where: GTFSShape.databaseTable.sqlTable.filter(TableColumn.id == id.rawValue))
+        try all(where: table.filter(Expression<String>("shape_id") == id.rawValue))
     }
     
     /// Get all `GTFSShape` points within the given shape.
@@ -78,25 +75,18 @@ public struct GTFSShape: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSShape: GTFSStructure {
-    enum TableColumn {
-        static let id = Expression<String>("shape_id")
-        static let latitude = Expression<Double>("shape_pt_lat")
-        static let longitude = Expression<Double>("shape_pt_lon")
-        static let pointSequence = Expression<Int>("shape_pt_sequence")
-        static let distanceTraveled = Expression<Double>("shape_dist_traveled")
+extension GTFSShape: CompositeKeyQueryable {
+    static let table = Table("shapes")
+    
+    static func createPrimaryKeyQuery<P1, P2>(_ primaryKey1: P1, _ primaryKey2: P2) -> SQLite.Table where P1 : SQLite.Value, P2 : SQLite.Value, P1.Datatype : Equatable, P2.Datatype : Equatable {
+        table.filter(Expression<P1>("shape_id") == primaryKey1 && Expression<P2>("shape_pt_sequence") == primaryKey2)
     }
     
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("shapes"),
-        primaryKeyColumn: TableColumn.id
-    )
-    
     init(row: Row) throws {
-        self.id = .init(try row.get(TableColumn.id))
-        self.latitude = Measurement(value: try row.get(TableColumn.latitude), unit: .degrees)
-        self.longitude = Measurement(value: try row.get(TableColumn.longitude), unit: .degrees)
-        self.pointSequence = try row.get(TableColumn.pointSequence)
-        self.distanceTraveled = Measurement(value: try row.get(TableColumn.distanceTraveled), unit: .miles)
+        self.id = .init(try row.get(Expression<String>("shape_id")))
+        self.latitude = Measurement(value: try row.get(Expression<Double>("shape_pt_lat")), unit: .degrees)
+        self.longitude = Measurement(value: try row.get(Expression<Double>("shape_pt_lon")), unit: .degrees)
+        self.pointSequence = try row.get(Expression<Int>("shape_pt_sequence"))
+        self.distanceTraveled = Measurement(value: try row.get(Expression<Double>("shape_dist_traveled")), unit: .miles)
     }
 }

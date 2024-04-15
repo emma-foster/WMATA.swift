@@ -31,17 +31,13 @@ public struct GTFSNetwork: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSNetwork: GTFSStructure {
-    /// Columns in the SQLite
-    enum TableColumn {
-        static let id = Expression<String>("network_id")
-        static let name = Expression<String>("network_name")
-    }
+extension GTFSNetwork: SimpleQueryable {
+    static let primaryKeyColumn = Expression<String>("network_id")
     
-    static let databaseTable = GTFSDatabase.Table(sqlTable: SQLite.Table("network"), primaryKeyColumn: TableColumn.id)
+    static let table = Table("network")
     
     init(row: Row) throws {
-        self.id = .init(try row.get(TableColumn.id))
-        self.name = try row.get(TableColumn.name)
+        self.id = .init(try row.get(Expression<String>("network_id")))
+        self.name = try row.get(Expression<String>("network_name"))
     }
 }
