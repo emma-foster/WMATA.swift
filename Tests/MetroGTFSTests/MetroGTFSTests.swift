@@ -295,29 +295,37 @@ final class MetroGTFSTests: XCTestCase {
     
     func testCreateFareLegRule() throws {
         let fareLegRule = try GTFSFareLegRule(
+            networkID: .init("Metrorail"),
             fromAreaID: .init("everywhere"),
             toAreaID: .init("everywhere"),
-            fromService: .init("weekday_flat")
+            fareProductID: .init("200_flat"),
+            fromServiceID: .init("weekday_flat")
         )
         
-        XCTAssertEqual(fareLegRule.fareProduct, .init("200_flat"))
+        XCTAssertEqual(fareLegRule.fareProductID, .init("200_flat"))
     }
     
     func testCreateFareLegRuleShorthand() throws {
         let fareLegRule = try GTFSFareLegRule(
+            networkID: "Metrorail",
             fromAreaID: "STN_A01_C01",
             toAreaID: "STN_A03",
-            fromService: "weekday_regular"
+            fareProductID: "200_regular",
+            fromServiceID: "weekday_regular"
         )
         
-        XCTAssertEqual(fareLegRule.fareProduct, .init("200_regular"))
+        XCTAssertEqual(fareLegRule.fareProductID, .init("200_regular"))
         XCTAssertEqual(fareLegRule.networkID, .init("Metrorail"))
     }
     
     func testCreateInvalidFareLegRule() {
         XCTAssertNil(
             try? GTFSFareLegRule(
-                networkID: .init("ABCDEFG")
+                networkID: "ABCDEFG",
+                fromAreaID: "ABCDEFG",
+                toAreaID: "ABCDEFG",
+                fareProductID: "ABCDEFG",
+                fromServiceID: "ABCDEFG"
             )
         )
     }

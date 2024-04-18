@@ -170,3 +170,21 @@ extension CompositeKeyQueryable {
         try self.init(row: row)
     }
 }
+
+protocol LongCompositeKeyQueryable: Queryable {
+    static func createPrimaryKeyQuery<P1, P2>(_ primaryKey1: P1, _ primaryKey2: P1, _ primaryKey3: P1, _ primaryKey4: P1, _ primaryKey5: P2?, _ primaryKey6: P2?) -> Table where P1: Value, P1.Datatype: Equatable, P2: Value, P2.Datatype: Equatable
+}
+
+extension LongCompositeKeyQueryable {
+    init<P1, P2>(_ primaryKey1: P1, _ primaryKey2: P1, _ primaryKey3: P1, _ primaryKey4: P1, _ primaryKey5: P2?, _ primaryKey6: P2?) throws where P1: Value, P1.Datatype: Equatable, P2: Value, P2.Datatype: Equatable {
+        let database = try GTFSDatabase()
+        
+        let query = Self.createPrimaryKeyQuery(primaryKey1, primaryKey2, primaryKey3, primaryKey4, primaryKey5, primaryKey6)
+
+        guard let row = try database.run(query: query) else {
+            throw GTFSDatabaseQueryError<Self>.notFound(query: query, Self.table)
+        }
+        
+        try self.init(row: row)
+    }
+}
