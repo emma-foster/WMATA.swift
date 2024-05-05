@@ -8,6 +8,7 @@
 import Foundation
 import SQLite
 
+// TODO: Document
 public struct GTFSFareMedia: Equatable, Hashable, Codable {
     
     /// A unique identifier for this fare media.

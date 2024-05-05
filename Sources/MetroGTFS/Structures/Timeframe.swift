@@ -8,7 +8,7 @@
 import Foundation
 import SQLite
 
-/// How fares change throughout the day. More details at [timeframes.txt](https://gtfs.org/schedule/reference/#timeframestxt).
+/// How fares change throughout the day. More details at [timeframes.txt](https://gtfs.org/schedule/reference/#timeframestxt)
 ///
 /// ## Example
 ///

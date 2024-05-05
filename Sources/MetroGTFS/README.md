@@ -13,6 +13,7 @@ This package is in active development and is likely to change.
 ## TODO
 
 - [ ] Populate database at run time
+- [ ] Implement `Unqueryable` type for GTFSNetwork
 
 ## Support
 

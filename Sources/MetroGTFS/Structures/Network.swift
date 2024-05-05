@@ -8,7 +8,9 @@
 import Foundation
 import SQLite
 
-/// A [GTFS Network](https://gtfs.org/schedule/reference/#networkstxt). Used to determine which network a ``GTFSRoute`` belongs to.
+/// A [GTFS Network](https://gtfs.org/schedule/reference/#networkstxt)
+///
+/// Used to determine which network a ``GTFSRoute`` belongs to.
 ///
 /// Transferring between networks an incur a fare, described in `fare_leg_rules.txt`.
 ///
@@ -31,6 +33,7 @@ public struct GTFSNetwork: Equatable, Hashable, Codable {
     }
 }
 
+// TODO: 
 extension GTFSNetwork: SimpleQueryable {
     static let primaryKeyColumn = Expression<String>("network_id")
     

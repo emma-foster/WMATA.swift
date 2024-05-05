@@ -8,7 +8,9 @@
 import Foundation
 import SQLite
 
-/// A [GTFS Area](https://gtfs.org/schedule/reference/#areastxt). Defines IDs for areas within the transit system. For WMATA, these represent physical stations or `everywhere`.
+/// A [GTFS Area](https://gtfs.org/schedule/reference/#areastxt)
+///
+/// Defines IDs for areas within the transit system. For WMATA, these represent physical stations or `everywhere`.
 ///
 /// ## Example
 /// ```

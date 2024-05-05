@@ -8,7 +8,9 @@
 import Foundation
 import SQLite
 
-/// A [GTFS Level](https://gtfs.org/schedule/reference/#levelstxt). Describes the different physical levels and floors in a station. Can be used with pathways to navigate stations.
+/// A [GTFS Level](https://gtfs.org/schedule/reference/#levelstxt)
+///
+/// Describes the different physical levels and floors in a station. Can be used with pathways to navigate stations.
 ///
 /// ```
 /// let level = try GTFSLevel("B05_L1")

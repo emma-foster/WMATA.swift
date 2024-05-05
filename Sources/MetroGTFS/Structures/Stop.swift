@@ -8,7 +8,7 @@
 import Foundation
 import SQLite
 
-/// A [GTFS Stop](https://gtfs.org/schedule/reference/#stopstxt).
+/// A [GTFS Stop](https://gtfs.org/schedule/reference/#stopstxt)
 ///
 /// For MetroRail, represents a Station, Platform, Entrance, locations between one of the previous stops like an elevator, escalator, or the paid and unpaid sides of a faregate.
 ///

@@ -8,6 +8,7 @@
 import Foundation
 import SQLite
 
+// TODO: Document
 public struct GTFSStopTime: Equatable, Hashable, Codable {
     
     /// The trip this stop occurs on

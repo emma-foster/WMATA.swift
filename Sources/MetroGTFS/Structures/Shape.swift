@@ -12,6 +12,8 @@ import SQLite
 ///
 /// Each `GTFSShape` represents a single point along
 ///
+/// See [Complete GTFS Docs](https://gtfs.org/schedule/reference/#shapestxt)
+///
 /// ## Examples
 /// ```
 /// // A single shape point

@@ -8,7 +8,9 @@
 import Foundation
 import SQLite
 
-/// A [GTFS Route](https://gtfs.org/schedule/reference/#routestxt). Describes transit routes that are run by some ``GTFSAgency``.
+/// A [GTFS Route](https://gtfs.org/schedule/reference/#routestxt)
+///
+/// Describes transit routes that are run by some ``GTFSAgency``.
 ///
 /// Routes are groups of `GTFSTrip`s that are displayed to riders as a single service.
 ///
