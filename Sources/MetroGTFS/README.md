@@ -12,9 +12,7 @@ This package is in active development and is likely to change.
 
 ## TODO
 
-- [ ] Rename Service to TimeFrame
-- [ ] Break current `GTFSStructure` type into `Queryable` and `CompositeKeyQueryable` types, to support structures with composite primary keys
-- [ ] Populate database at run time?
+- [ ] Populate database at run time
 
 ## Support
 

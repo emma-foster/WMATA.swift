@@ -62,40 +62,29 @@ public struct GTFSTrip: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSTrip: GTFSStructure {
-    enum TableColumn {
-        static let routeID = Expression<String>("route_id")
-        static let serviceID = Expression<String>("service_id")
-        static let id = Expression<String>("trip_id")
-        static let headsign = Expression<String?>("trip_headsign")
-        static let direction = Expression<Int>("direction_id")
-        static let block = Expression<String?>("block_id")
-        static let shapeID = Expression<String>("shape_id")
-    }
+extension GTFSTrip: SimpleQueryable {
+    static let table = SQLite.Table("trips")
     
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("trips"),
-        primaryKeyColumn: TableColumn.id
-    )
+    static let primaryKeyColumn = Expression<String>("trip_id")
     
     init(row: Row) throws {
-        self.routeID = .init(try row.get(TableColumn.routeID))
-        self.serviceID = .init(try row.get(TableColumn.serviceID))
-        self.id = .init(try row.get(TableColumn.id))
-        self.headsign = try row.get(TableColumn.headsign)
+        self.routeID = .init(try row.get(Expression<String>("route_id")))
+        self.serviceID = .init(try row.get(Expression<String>("service_id")))
+        self.id = .init(try row.get(Expression<String>("trip_id")))
+        self.headsign = try row.get(Expression<String?>("trip_headsign"))
         
-        guard let direction = Direction(rawValue: try row.get(TableColumn.direction)) else {
+        guard let direction = Direction(rawValue: try row.get(Expression<Int>("direction_id"))) else {
             throw GTFSDatabaseDecodingError.invalidEntry(structureType: GTFSTrip.self, key: "direction_id")
         }
         
         self.direction = direction
         
-        let block = try row.get(TableColumn.block)
+        let block = try row.get(Expression<String?>("block_id"))
         
         if let block, block != "" {
             self.block = block
         }
         
-        self.shapeID = .init(try row.get(TableColumn.shapeID))
+        self.shapeID = .init(try row.get(Expression<String>("shape_id")))
     }
 }

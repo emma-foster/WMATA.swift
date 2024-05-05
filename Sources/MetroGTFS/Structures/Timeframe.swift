@@ -55,24 +55,16 @@ public struct GTFSTimeframe: Equatable, Hashable, Codable {
     }
 }
 
-extension GTFSTimeframe: GTFSStructure {
-    enum TableColumn {
-        static let id = Expression<String>("timeframe_group_id")
-        static let startTime = Expression<String>("start_time")
-        static let endTime = Expression<String>("end_time")
-        static let serviceID = Expression<String>("service_id")
-    }
+extension GTFSTimeframe: SimpleQueryable { // TODO: make basic Queryable instead
+    static let table = Table("timeframes")
     
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("timeframes"),
-        primaryKeyColumn: TableColumn.id
-    )
+    static let primaryKeyColumn = Expression<String>("timeframe_group_id")
     
     init(row: Row) throws {
-        self.id = .init(try row.get(TableColumn.id))
+        self.id = .init(try row.get(Expression<String>("timeframe_group_id")))
         
-        let startTime = try row.get(TableColumn.startTime)
-        var endTime = try row.get(TableColumn.endTime)
+        let startTime = try row.get(Expression<String>("start_time"))
+        var endTime = try row.get(Expression<String>("end_time"))
         
         if endTime == "24:00:00" {
             endTime = "23:59:59"
@@ -92,6 +84,6 @@ extension GTFSTimeframe: GTFSStructure {
         self.startTime = startTime
         self.endTime = endTime
         
-        self.serviceID = .init(try row.get(TableColumn.serviceID))
+        self.serviceID = .init(try row.get(Expression<String>("service_id")))
     }
 }

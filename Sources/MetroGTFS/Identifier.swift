@@ -61,6 +61,4 @@ extension GTFSIdentifier: Value {
     public static var declaredDatatype: String {
         String.declaredDatatype
     }
-    
-    
 }

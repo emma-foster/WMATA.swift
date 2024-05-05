@@ -53,56 +53,6 @@ struct GTFSDatabase {
 }
 
 extension GTFSDatabase {
-    /// Get all GTFS Structures of the given type from the GTFS Database
-    func all<Structure: GTFSStructure>(_ structure: Structure.Type) throws -> AnySequence<Row> {
-        return try run(query: structure.databaseTable.sqlTable)
-    }
-    
-    /// Get all GTFS Structures of the given type with the given `id` in the given `column`. Defaults to using the primary key column.
-    func all<Structure: GTFSStructure>(
-        _ structure: Structure.Type,
-        with id: GTFSIdentifier<Structure>,
-        in column: SQLite.Expression<String> = Structure.databaseTable.primaryKeyColumn
-    ) throws -> AnySequence<Row> {
-        return try run(query: structure.databaseTable.sqlTable.where(column == id.rawValue))
-    }
-    
-    /// Get all GTFS Structures of the given type with the given `id` in the given `column`.
-    func all<Structure: GTFSStructure>(
-        _ structure: Structure.Type,
-        with id: GTFSIdentifier<Structure>,
-        in column: SQLite.Expression<String?>
-    ) throws -> AnySequence<Row> {
-        return try run(query: structure.databaseTable.sqlTable.where(column == id.rawValue))
-    }
-    
-    /// Get all GTFS Structures of the given type that match the given query
-    func all<Structure: GTFSStructure>(
-        _ structure: Structure.Type,
-        where query: SQLite.Table
-    ) throws -> AnySequence<Row> {
-        return try self.run(query: query)
-    }
-    
-    /// Get a single structure of the given type with the given `id` in the given `column`. Defaults to using the primary key column.
-    func one<Structure: GTFSStructure>(
-        _ structure: Structure.Type,
-        with id: GTFSIdentifier<Structure>,
-        in column: SQLite.Expression<String> = Structure.databaseTable.primaryKeyColumn
-    ) throws -> Row? {
-        try run(query: structure.databaseTable.sqlTable.where(column == id.rawValue))
-    }
-
-    /// Get a single GTFS structure of the given type that matches the given query.
-    func one<Structure: GTFSStructure>(
-        _ structure: Structure.Type,
-        where query: SQLite.Table
-    ) throws ->Row? {
-        return try self.run(query: query)
-    }
-}
-
-extension GTFSDatabase {
     /// The global shares connection to the GTFS database
     private static var shared: Connection?
     

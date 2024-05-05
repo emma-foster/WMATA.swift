@@ -52,43 +52,24 @@ public struct GTFSFareProduct: Equatable, Hashable, Codable {
     }
     
     /// Query the database for a fare product given the fare product ID and fare media ID
-    public init(fareProductID: GTFSIdentifier<GTFSFareProduct>, fareMediaID: GTFSIdentifier<GTFSFareMedia> = .init("smartrip_card")) throws {
-        try self.init(where: GTFSFareProduct.databaseTable.sqlTable
-            .filter(TableColumn.fareProductID == fareProductID.rawValue)
-            .filter(TableColumn.fareMediaID == fareMediaID.rawValue)
-        )
-    }
-    
-    /// Query the database for a fare product given the fare product ID and fare media ID
-    public init(_ fareProductID: @autoclosure @escaping () -> String, fareMediaID: @autoclosure @escaping (() -> String?) = nil) throws {
-        try self.init(fareProductID: .init(fareProductID()), fareMediaID: .init(fareMediaID() ?? "smartrip_card"))
+    public init(_ fareProductID: @autoclosure @escaping () -> String, fareMediaID: @autoclosure @escaping (() -> String) = { "smartrip_card" }()) throws {
+        try self.init(GTFSIdentifier<GTFSFareProduct>(fareProductID()), GTFSIdentifier<GTFSFareMedia>(fareMediaID()))
     }
 }
 
-extension GTFSFareProduct: GTFSStructure {
-    var id: GTFSIdentifier<GTFSFareProduct> {
-        .init("\(self.fareProductID), \(self.fareMediaID)")
-    }
+extension GTFSFareProduct: CompositeKeyQueryable {
+    static let table = Table("fare_products")
     
-    enum TableColumn {
-        static let fareProductID = Expression<String>("fare_product_id")
-        static let name = Expression<String>("fare_product_name")
-        static let fareMediaID = Expression<String>("fare_media_id")
-        static let amount = Expression<Double>("amount")
-        static let currency = Expression<String>("currency")
+    static func createPrimaryKeyQuery<P1, P2>(_ primaryKey1: P1, _ primaryKey2: P2) -> Table where P1 : Value, P2 : Value, P1.Datatype : Equatable, P2.Datatype : Equatable {
+        table.filter(Expression<P1>("fare_product_id") == primaryKey1 && Expression<P2>("fare_media_id") == primaryKey2)
     }
-    
-    static let databaseTable = GTFSDatabase.Table(
-        sqlTable: SQLite.Table("fare_products"),
-        primaryKeyColumn: TableColumn.fareProductID
-    )
     
     init(row: Row) throws {
-        self.fareProductID = .init(try row.get(TableColumn.fareProductID))
-        self.name = try row.get(TableColumn.name)
-        self.fareMediaID = .init(try row.get(TableColumn.fareMediaID))
-        self.amount = try row.get(TableColumn.amount)
-        self.currency = try row.get(TableColumn.currency)
+        self.fareProductID = .init(try row.get(Expression<String>("fare_product_id")))
+        self.name = try row.get(Expression<String>("fare_product_name"))
+        self.fareMediaID = .init(try row.get(Expression<String>("fare_media_id")))
+        self.amount = try row.get(Expression<Double>("amount"))
+        self.currency = try row.get(Expression<String>("currency"))
     }
 }
 
